@@ -1,0 +1,96 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+    <script src="https://s3.amazonaws.com/public.forte.prod/fpdh/handler.js" type="text/javascript"></script>
+    <script src="https://code.jquery.com/jquery-1.11.0.min.js"></script>
+    
+
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+
+            forteDeviceHandler.connect(onConnect)
+                    .disconnect(onDisconnect)
+                    .acknowledge(onAcknowledge)
+                    .success(onSuccess)
+                    .decline(onDecline)
+                    .error(onError)
+                    .timeout(onTimeout).init();
+
+            $('#submit').on('click', function () {
+                var data = {
+                    //add more parameters here
+                    pg_merchant_id: $('#mid').val(),
+                    pg_total_amount: $('#amount').val(),
+                    pg_convenience_fee: $('#fee').val(),
+                    pg_sales_tax_amount: $('#tax').val()
+                }
+
+                forteDeviceHandler.createTransaction(data);
+                     
+
+                $("#message").html($("#message").html() + 'Send data to terminal:' + JSON.stringify(data) + '<br>');
+                $('#submit').prop("disabled", true);
+
+                return false;
+            });
+        });
+
+        function onConnect(result) {
+            //COM port is found
+            $('#submit').prop("disabled", false); //enable submit button
+
+            $("#message").html($("#message").html() + 'Terminal connected. ' + JSON.stringify(result) + '<br>');
+        }
+
+        function onDisconnect(result) {
+            $('#submit').prop("disabled", true); //disable submit button if no COM port found
+
+            $("#message").html($("#message").html() + 'Terminal disconnected. ' + JSON.stringify(result) + '<br>');
+        }
+
+        function onAcknowledge(result) {
+            //transaction request is acknowledged, run the credit card in terminal
+            $("#message").html($("#message").html() + 'Terminal acknowledged, dip the card. ' + JSON.stringify(result) + '<br>');
+            $('#submit').prop("disabled", true);
+        }
+
+        function onSuccess(result) {
+            //handle success transaction here
+            $("#message").html($("#message").html() + 'Transaction success. ' + JSON.stringify(result) + '<br>');
+            $('#submit').prop("disabled", false);
+        }
+
+        function onDecline(result) {
+            //handle declined transaction here
+            $("#message").html($("#message").html() + 'Transaction declined. ' + JSON.stringify(result) + '<br>');
+            $('#submit').prop("disabled", false);
+        }
+
+        function onError(result) {
+            //handle error here
+            $("#message").html($("#message").html() + 'Error occurs. ' + JSON.stringify(result) + '<br>');
+            $('#submit').prop("disabled", false);
+        }
+
+        function onTimeout(result) {
+            //handle timeout here
+            $("#message").html($("#message").html() + 'Terminal did not respond to request. ' + JSON.stringify(result) + '<br>');
+            $('#submit').prop("disabled", false);
+        }
+    </script>
+
+</head>
+<body>
+    <div id="message" style="background-color:#e5e5e5;z-index:999999"></div>
+    <div>
+        Merchant ID: <input id="mid" type="text" value="147056" /><br />
+        Amount: $<input id="amount" type="text" value="1.00" /><br />
+        tax: $<input id="tax" type="text" value="0.00" /><br />
+        service fee: $<input id="fee" type="text" value="0.00" /><br />
+        <button type="submit" id="submit" disabled>Submit</button>
+        
+    </div>
+</body>
+</html>
