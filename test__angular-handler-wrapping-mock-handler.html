@@ -71,16 +71,14 @@
             Merchant ID: <input ng-model='merchantId' /><br />
             Amount: $<input ng-model="amount" type="text" /><br />
             tax: $<input ng-model='tax' type="text" /><br />
-            service fee: $<input ng-model="convenienceFee" type="text" /><br />
             <div>Result: {{result.message}}<br>
             <button angular-forte-handler 
                 is-connected='isConnected' 
                 is-processing='isProcessing' 
-                merchant-id='merchantId' 
-                amount='amount' 
-                convenience-fee='convenienceFee' 
-                tax='tax' 
-                action='createTransaction' 
+                pg-merchant-id='merchantId' 
+                pg-total-amount='amount' 
+                pg-sales-tax-amount='tax' 
+                pg_transaction_type="'CREDITCARD_SALE'" 
                 result='result' ng-disabled="!isConnected || isProcessing">Submit</button>
         </div>
     </body>
