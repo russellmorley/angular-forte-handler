@@ -17,8 +17,8 @@
 
 *   **pg-transaction-type** (required) 'CREDITCARD_SALE', 'CREDITCARD_VOID', 'CREDITCARD_CREDIT', 'EFT_SALE', 'EFT_VOID', or 'EFT_CREDIT'. 
 *   **pg-merchant-id** (required) must be set to the six digit merchant id
-*   **pg-total-amount** (required for pg-transaction-type CREDITCARD_SALE, EFT_SALE, CREDITCARD_CREDIT, EFT_CREDIT) the amount to charge or credit. Number is always positive
-*   **pg-sales-tax-amount** (optional for pg-transaction-type CREDITCARD_SALE, EFT_SALE, defaults to $0.00) the amount of tax to add
+*   **pg-total-amount** (required, , string of a positive decimal to exactly hundredths) for pg-transaction-type CREDITCARD_SALE, EFT_SALE, CREDITCARD_CREDIT, EFT_CREDIT, represents the amount to charge or credit. Number is always positive for both SALE and CREDIT.
+*   **pg-sales-tax-amount** (optional, string of decimal to exactly hundredths) for pg-transaction-type CREDITCARD_SALE, EFT_SALE, defaults to '0.00', represents the amount of tax to add.
 *   **pg_original-authorization-code** (required for pg-transaction-type CREDITCARD_VOID or EFT_VOID) obtained from result.pg_authorization_code from the transaction to void.
 *   **pg_original-trace-number** (required for pg-transaction-type CREDITCARD_VOID or EFT_VOID) obtained from result.pg_trace_number from the prior transaction.
 *   **is-connected** true if connected, else false

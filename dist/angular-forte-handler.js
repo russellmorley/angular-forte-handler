@@ -107,7 +107,7 @@
                             }
 
                             if (!scope.pgSalesTaxAmount) {
-                                scope.pgSalesTaxAmount = 0.0;
+                                scope.pgSalesTaxAmount = '0.00';
                             }
 
                             event.preventDefault();

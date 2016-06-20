@@ -20,7 +20,6 @@
         <div>
         </div>
         <div ng-controller="Controller">
-
             Merchant ID: <input ng-model='merchantId' /><br />
             Amount: $<input ng-model="amount" type="text" /><br />
             tax: $<input ng-model='tax' type="text" /><br />
@@ -32,7 +31,42 @@
                 pg-total-amount='amount' 
                 pg-sales-tax-amount='tax' 
                 pg_transaction_type="'CREDITCARD_SALE'" 
-                result='result' ng-disabled="!isConnected || isProcessing">Submit</button>
+                result='result' ng-disabled="!isConnected || isProcessing">SALE</button>
+            <br>
+            <button angular-forte-handler 
+                is-connected='isConnected' 
+                is-processing='isProcessing' 
+                pg-merchant-id='merchantId' 
+                pg-total-amount='amount' 
+                pg_transaction_type="'CREDITCARD_CREDIT'" 
+                result='result' ng-disabled="!isConnected || isProcessing">Credit Card CREDIT</button>
+            <button angular-forte-handler 
+                is-connected='isConnected' 
+                is-processing='isProcessing' 
+                pg-merchant-id='merchantId' 
+                pg-total-amount='amount' 
+                pg_transaction_type="'ET_CREDIT'" 
+                result='result' ng-disabled="!isConnected || isProcessing">EBT CREDIT</button>
+            <br>
+            Original Authorization Code: <input ng-model='pgOriginalAuthorizationCode' /><br />
+            Original Trace Number: $<input ng-model="pgOriginalTraceNumber" type="text" /><br />
+            <div>Result: {{result.message}}<br>
+            <button angular-forte-handler 
+                is-connected='isConnected' 
+                is-processing='isProcessing' 
+                pg-merchant-id='merchantId' 
+                pg-original-authorization-code='pgOriginalAuthorizationCode' 
+                pg-original-trace-number='pgOriginalTraceNumber' 
+                pg_transaction_type="'CREDITCARD_VOID'" 
+                result='result' ng-disabled="!isConnected || isProcessing">Credit Card VOID</button>
+            <button angular-forte-handler 
+                is-connected='isConnected' 
+                is-processing='isProcessing' 
+                pg-merchant-id='merchantId' 
+                pg-original-authorization-code='pgOriginalAuthorizationCode' 
+                pg-original-trace-number='pgOriginalTraceNumber' 
+                pg_transaction_type="'EBT_VOID'" 
+                result='result' ng-disabled="!isConnected || isProcessing">EBT VOID</button>
         </div>
     </body>
 </html>
