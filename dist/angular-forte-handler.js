@@ -26,13 +26,12 @@
                         pgTotalAmount:              '=pgTotalAmount',
                         pgSalesTaxAmount:           '=?pgSalesTaxAmount',
                         pgOriginalAuthorizationCode:'=pgOriginalAuthorizationCode',
-                        pgOriginalTraceNumber:      '=pgOriginalTraceNumber'
+                        pgOriginalTraceNumber:      '=pgOriginalTraceNumber',
+                        isConnected:                '=isConnected',
+                        isProcessing:               '=isProcessing',
+                        result:                     '=result'
                     },
                     link: function (scope, element, attrs, ngModel) {
-
-                        if (!scope.pgSalesTaxAmount) {
-                            scope.pgSalesTaxAmount = 0.0;
-                        }
 
                         var ENUM__CREDITCARD_SALE   = 'CREDITCARD_SALE';
                         var ENUM__CREDITCARD_VOID   = 'CREDITCARD_VOID';
@@ -48,45 +47,49 @@
                         var CODE__EFT_VOID                = '24';
                         var CODE__EFT_CREDIT              = '23';
 
-
-
-                        var setParentProperty = function(name, value) {
-                            $parse(name).assign(scope.$parent, value);
-                            scope.$parent.$applyAsync();
-                        };
-                        var getParentProperty = function(name) {
-                            return scope.$parent[name];
-                        };
-
-
                         var onConnect = function(result) {
-                            setParentProperty(attrs.isConnected, true);
-                            setParentProperty(attrs.result, result);
+                            scope.$apply(function() {
+                                scope.isConnected = true;
+                                scope.result = result;
+                            });
                         }
+
                         var onDisconnect = function(result) {
-                            setParentProperty(attrs.isConnected, false);
-                            setParentProperty(attrs.isProcessing, false);
-                            setParentProperty(attrs.result, result);
+                            scope.$apply(function() {
+                                scope.isConnected = false;
+                                scope.isProcessing = false;
+                                scope.result = result;
+                            });
                         }
                         var onAcknowledge = function(result) {
-                            setParentProperty(attrs.isProcessing, false);
-                            setParentProperty(attrs.result, result);
+                            scope.$apply(function() {
+                                scope.isProcessing = false;
+                                scope.result = result;
+                            });
                         }
                         var onSuccess = function(result) {
-                            setParentProperty(attrs.isProcessing, false);
-                            setParentProperty(attrs.result, result);
+                            scope.$apply(function() {
+                                scope.isProcessing = false;
+                                scope.result = result;
+                            });
                         }
                         var onDecline = function(result) {
-                            setParentProperty(attrs.isProcessing, false);
-                            setParentProperty(attrs.result, result);
+                            scope.$apply(function() {
+                                scope.isProcessing = false;
+                                scope.result = result
+                            });
                         }
                         var onError = function(result) {
-                            setParentProperty(attrs.isProcessing, false);
-                            setParentProperty(attrs.result, result);
+                            scope.$apply(function() {
+                                scope.isProcessing = false;
+                                scope.result = result
+                            });
                         }
                         var onTimeout = function(result) {
-                            setParentProperty(attrs.isProcessing, false);
-                            setParentProperty(attrs.result, result);
+                            scope.$apply(function() {
+                                scope.isProcessing = false;
+                                scope.result = result
+                            });
                         }
 
                        $window.forteDeviceHandler.connect(onConnect)
@@ -99,66 +102,85 @@
                             .init();
 
                         element.on('mousedown', function(event) {
-                           if (!getParentProperty(attrs.isConnected) || getParentProperty(attrs.isProcessing)) return;
+                            if (!scope.isConnected || scope.isProcessing) {
+                                return;
+                            }
+
+                            if (!scope.pgSalesTaxAmount) {
+                                scope.pgSalesTaxAmount = 0.0;
+                            }
+
                             event.preventDefault();
                             switch (scope.pgTransactionType) {
                                 case ENUM__CREDITCARD_SALE:
-                                    setParentProperty(attrs.isProcessing, true);
-                                    $window.forteDeviceHandler.createTransaction({
-                                        pg_transaction_type:    CODE__CREDITCARD_SALE,
-                                        pg_merchant_id:         scope.pgMerchantId, 
-                                        pg_total_amount:        scope.pgTotalAmount, 
-                                        pg_sales_tax_amount:    scope.pgSalesTaxAmount
+                                    scope.$apply(function() {
+                                        scope.isProcessing = true;
+                                        $window.forteDeviceHandler.createTransaction({
+                                            pg_transaction_type:    CODE__CREDITCARD_SALE,
+                                            pg_merchant_id:         scope.pgMerchantId, 
+                                            pg_total_amount:        scope.pgTotalAmount, 
+                                            pg_sales_tax_amount:    scope.pgSalesTaxAmount
+                                        });
                                     });
                                     break;
                                 case ENUM__CREDITCARD_VOID:
-                                    setParentProperty(attrs.isProcessing, true);
-                                    $window.forteDeviceHandler.createTransaction({
-                                        pg_transaction_type:            CODE__CREDITCARD_VOID,
-                                        pg_merchant_id:                 scope.pgMerchantId, 
-                                        pg_original_authorization_code: scope.pgOriginalAuthorizationCode,
-                                        pg_original_trace_number:       scope.pgOriginalTraceNumber
+                                    scope.$apply(function() {
+                                        scope.isProcessing = true;
+                                        $window.forteDeviceHandler.createTransaction({
+                                            pg_transaction_type:            CODE__CREDITCARD_VOID,
+                                            pg_merchant_id:                 scope.pgMerchantId, 
+                                            pg_original_authorization_code: scope.pgOriginalAuthorizationCode,
+                                            pg_original_trace_number:       scope.pgOriginalTraceNumber
+                                        });
                                     });
                                     break;
                                 case ENUM__CREDITCARD_CREDIT:
-                                    setParentProperty(attrs.isProcessing, true);
-                                    $window.forteDeviceHandler.createTransaction({
-                                        pg_transaction_type:    CODE__CREDITCARD_CREDIT,
-                                        pg_merchant_id:         scope.pgMerchantId, 
-                                        pg_total_amount:        scope.pgTotalAmount, 
+                                    scope.$apply(function() {
+                                        scope.isProcessing = true;
+                                        $window.forteDeviceHandler.createTransaction({
+                                            pg_transaction_type:    CODE__CREDITCARD_CREDIT,
+                                            pg_merchant_id:         scope.pgMerchantId, 
+                                            pg_total_amount:        scope.pgTotalAmount, 
+                                        });
                                     });
                                     break;
                                 case ENUM__EFT_SALE:
-                                    setParentProperty(attrs.isProcessing, true);
-                                    $window.forteDeviceHandler.createTransaction({
-                                        pg_transaction_type:    CODE__EFT_SALE,
-                                        pg_merchant_id:         scope.pgMerchantId, 
-                                        pg_total_amount:        scope.pgTotalAmount, 
-                                        pg_sales_tax_amount:    scope.pgSalesTaxAmount
+                                    scope.$apply(function() {
+                                        scope.isProcessing = true;
+                                        $window.forteDeviceHandler.createTransaction({
+                                            pg_transaction_type:    CODE__EFT_SALE,
+                                            pg_merchant_id:         scope.pgMerchantId, 
+                                            pg_total_amount:        scope.pgTotalAmount, 
+                                            pg_sales_tax_amount:    scope.pgSalesTaxAmount
+                                        });
                                     });
                                     break;
                                 case ENUM__EFT_VOID:
-                                    setParentProperty(attrs.isProcessing, true);
-                                    $window.forteDeviceHandler.createTransaction({
-                                        pg_transaction_type:            CODE__EFT_VOID,
-                                        pg_merchant_id:                 scope.pgMerchantId, 
-                                        pg_original_authorization_code: scope.pgOriginalAuthorizationCode,
-                                        pg_original_trace_number:       scope.pgOriginalTraceNumber
+                                    scope.$apply(function() {
+                                        scope.isProcessing = true;
+                                        $window.forteDeviceHandler.createTransaction({
+                                            pg_transaction_type:            CODE__EFT_VOID,
+                                            pg_merchant_id:                 scope.pgMerchantId, 
+                                            pg_original_authorization_code: scope.pgOriginalAuthorizationCode,
+                                            pg_original_trace_number:       scope.pgOriginalTraceNumber
+                                        });
                                     });
                                     break;
                                 case ENUM__EFT_CREDIT:
-                                    setParentProperty(attrs.isProcessing, true);
-                                    $window.forteDeviceHandler.createTransaction({
-                                        pg_transaction_type:    CODE__EFT_CREDIT,
-                                        pg_merchant_id:         scope.pgMerchantId, 
-                                        pg_total_amount:        scope.pgTotalAmount, 
+                                    scope.$apply(function() {
+                                        scope.isProcessing = true;
+                                        $window.forteDeviceHandler.createTransaction({
+                                            pg_transaction_type:    CODE__EFT_CREDIT,
+                                            pg_merchant_id:         scope.pgMerchantId, 
+                                            pg_total_amount:        scope.pgTotalAmount, 
+                                        });
                                     });
                                     break;
                             }
                         });
 
-                        setParentProperty(attrs.isConnected, false);
-                        setParentProperty(attrs.isProcessing, false);
+                        scope.isConnected = false;
+                        scope.isProcessing = false;
                     }
                 }; //return
             } // function
