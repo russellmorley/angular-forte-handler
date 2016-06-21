@@ -47,10 +47,26 @@
                         var CODE__EFT_VOID                = '24';
                         var CODE__EFT_CREDIT              = '23';
 
+                        var processResult = function(result) {
+                            if (result.hasOwnProperty('pg_transaction_type')) {
+                                switch (result.pg_transaction_type) {
+                                    case CODE__CREDITCARD_SALE:
+                                        result.pg_transaction_type = ENUM__CREDITCARD_SALE;
+                                        break;
+                                    case CODE__CREDITCARD_VOID:
+                                        result.pg_transaction_type = ENUM__CREDITCARD_VOID;
+                                        break;
+                                    case CODE__CREDITCARD_CREDIT:
+                                        result.pg_transaction_type = ENUM__CREDITCARD_CREDIT;
+                                        break;
+                                }
+                            }
+                        };
+
                         var onConnect = function(result) {
                             scope.$apply(function() {
                                 scope.isConnected = true;
-                                scope.result = result;
+                                scope.result = processResult(result);
                             });
                         }
 
@@ -58,37 +74,37 @@
                             scope.$apply(function() {
                                 scope.isConnected = false;
                                 scope.isProcessing = false;
-                                scope.result = result;
+                                scope.result = processResult(result);
                             });
                         }
                         var onAcknowledge = function(result) {
                             scope.$apply(function() {
                                 scope.isProcessing = false;
-                                scope.result = result;
+                                scope.result = processResult(result);
                             });
                         }
                         var onSuccess = function(result) {
                             scope.$apply(function() {
                                 scope.isProcessing = false;
-                                scope.result = result;
+                                scope.result = processResult(result);
                             });
                         }
                         var onDecline = function(result) {
                             scope.$apply(function() {
                                 scope.isProcessing = false;
-                                scope.result = result
+                                scope.result = processResult(result)
                             });
                         }
                         var onError = function(result) {
                             scope.$apply(function() {
                                 scope.isProcessing = false;
-                                scope.result = result
+                                scope.result = processResult(result)
                             });
                         }
                         var onTimeout = function(result) {
                             scope.$apply(function() {
                                 scope.isProcessing = false;
-                                scope.result = result
+                                scope.result = processResult(result)
                             });
                         }
 
