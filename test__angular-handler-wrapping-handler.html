@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
     <head>
         <title>Angular Handler Directive wrapping real handler</title>
@@ -6,15 +6,14 @@
         <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.18/angular.min.js"></script>
         <script src="dist/angular-forte-handler.js"></script>
         <script type="text/javascript">
-
             (function(angular) {
                 'use strict';
                 angular.module('app', ['angularForteHandler'])
                     .controller('Controller', ['$scope', '$timeout', function($scope, $timeout) {
+                        $scope.control = {};
                     }]);
             })(window.angular);
         </script>
-
     </head>
     <body ng-app="app">
         <div>
@@ -32,39 +31,33 @@
                 <li>authorization code='{{result.pg_authorization_code}}'</li>
                 <li>trace number='{{result.pg_trace_number}}'</li>
             </ul>
-        <br><br>
-            <button angular-forte-handler 
-                is-connected='isConnected' 
-                is-processing='isProcessing' 
-                pg-merchant-id='merchantId' 
-                pg-total-amount='amount' 
-                pg-sales-tax-amount='tax' 
-                pg_transaction_type="'SALE'" 
-                result='result' ng-disabled="!isConnected || isProcessing">SALE</button>
+            <angular-forte-handler 
+                is-connected="isConnected"
+                is-processing="isProcessing"
+                pg-merchant-id="merchantId"
+                pg-total-amount="amount"
+                pg-sales-tax-amount="tax"
+                result="result"
+                control="control" />
+            <br><br>
+            <button ng-click="control.triggerTransaction('SALE');"
+                ng-disabled="!isConnected || isProcessing ||!amount || amount < 0.0">Charge/EBT
+            </button>
             <br>
-            <button angular-forte-handler 
-                is-connected='isConnected' 
-                is-processing='isProcessing' 
-                pg-merchant-id='merchantId' 
-                pg-total-amount='amount' 
-                pg_transaction_type="'CREDIT'" 
-                result='result' ng-disabled="!isConnected || isProcessing">CREDIT</button>
-            <button angular-forte-handler 
-                is-connected='isConnected' 
-                is-processing='isProcessing' 
-                pg-merchant-id='merchantId' 
-                pg-original-authorization-code='result.pg_authorization_code' 
-                pg-original-trace-number='result.pg_trace_number' 
-                pg_transaction_type="'VOID_CREDITCARD'" 
-                result='result' ng-disabled="!isConnected || isProcessing">VOID Credit Card</button>
-            <button angular-forte-handler 
-                is-connected='isConnected' 
-                is-processing='isProcessing' 
-                pg-merchant-id='merchantId' 
-                pg-original-authorization-code='result.pg_authorization_code' 
-                pg-original-trace-number='result.pg_trace_number' 
-                pg_transaction_type="'VOID_EBT'" 
-                result='result' ng-disabled="!isConnected || isProcessing">VOID EBT</button>
+            <button ng-click="control.triggerTransaction('CREDIT');"
+                ng-disabled="!isConnected || isProcessing || !amount || amount > 0.0">Refund
+            </button>
+            <br>
+            <button ng-click="control.triggerTransaction('VOID_CREDITCARD');"
+                ng-disabled="!isConnected || isProcessing || !result.pg_trace_number || !result.pg_authorization_code">Void Charge
+            </button>
+            <br>
+            <button ng-click="control.triggerTransaction('VOID_EBT');"
+                ng-disabled="!isConnected || isProcessing || !result.pg_trace_number || !result.pg_authorization_code">Void EBT
+            </button>
+            <br><br>
+		<button ng-disabled="isProcessing">OK</button>
         </div>
     </body>
 </html>
+

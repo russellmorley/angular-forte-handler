@@ -1,8 +1,7 @@
 /**!
  * AngularJS VX520 button attribute directive.
- * Based on https://docs.angular.org/api/ng/type/ngModel.NgModelController, example at bottom.
  * @author Russell Morley <russell@compass-point.net>
- * @version 0.1.0
+ * @version 0.3.x
  */
 
 /* global angular */
@@ -19,9 +18,8 @@
             '$parse',
             function ($window, $timeout, $log, $parse) {
                 return {
-                    restrict: 'A', //attribute only - element should be a button
+                    restrict: 'E', //element only
                     scope: {
-                        pgTransactionType:          '=pgTransactionType',
                         pgMerchantId:               '=pgMerchantId',
                         pgTotalAmount:              '=pgTotalAmount',
                         pgSalesTaxAmount:           '=?pgSalesTaxAmount',
@@ -29,9 +27,12 @@
                         pgOriginalTraceNumber:      '=pgOriginalTraceNumber',
                         isConnected:                '=isConnected',
                         isProcessing:               '=isProcessing',
-                        result:                     '=result'
+                        result:                     '=result',
+                        control:                    '=control'
                     },
                     link: function (scope, element, attrs, ngModel) {
+
+                        scope.directiveControl = scope.control ? scope.control : {};
 
                         var ENUM__SALE              = 'SALE';
                         var ENUM__CREDIT            = 'CREDIT';
@@ -60,6 +61,7 @@
                                         break;
                                 }
                             }
+                            return result;
                         };
 
                         var onConnect = function(result) {
@@ -78,8 +80,7 @@
                         }
                         var onAcknowledge = function(result) {
                             scope.$apply(function() {
-                                scope.isProcessing = false;
-                                scope.result = processResult(result);
+                                scope.isProcessing = true;
                             });
                         }
                         var onSuccess = function(result) {
@@ -116,61 +117,48 @@
                             .timeout(onTimeout)
                             .init();
 
-                        element.on('mousedown', function(event) {
+                        scope.directiveControl.triggerTransaction = function(transactionType) {
                             if (!scope.isConnected || scope.isProcessing) {
                                 return;
                             }
 
-                            event.preventDefault();
-                            switch (scope.pgTransactionType) {
+                            switch (transactionType) {
                                 case ENUM__SALE:
-                                    scope.$apply(function() {
-                                        scope.isProcessing = true;
-                                        var transaction = {
-                                            //pg_transaction_type:    CODE__SALE,
-                                            pg_merchant_id:         scope.pgMerchantId, 
-                                            pg_total_amount:        scope.pgTotalAmount, 
-                                        };
-                                        if (scope.pgSalesTaxAmount) {
-                                            transaction.pg_sales_tax_amount = scope.pgSalesTaxAmount;
-                                        }
-                                        $window.forteDeviceHandler.createTransaction(transaction);
-                                    });
+                                    var transaction = {
+                                        //pg_transaction_type:    CODE__SALE,
+                                        pg_merchant_id:         scope.pgMerchantId,
+                                        pg_total_amount:        scope.pgTotalAmount,
+                                    };
+                                    if (scope.pgSalesTaxAmount) {
+                                        transaction.pg_sales_tax_amount = scope.pgSalesTaxAmount;
+                                    }
+                                    $window.forteDeviceHandler.createTransaction(transaction);
                                     break;
                                 case ENUM__CREDIT:
-                                    scope.$apply(function() {
-                                        scope.isProcessing = true;
-                                        $window.forteDeviceHandler.createTransaction({
-                                            pg_transaction_type:    CODE__CREDIT,
-                                            pg_merchant_id:         scope.pgMerchantId, 
-                                            pg_total_amount:        scope.pgTotalAmount, 
-                                        });
+                                    $window.forteDeviceHandler.createTransaction({
+                                        pg_transaction_type:    CODE__CREDIT,
+                                        pg_merchant_id:         scope.pgMerchantId,
+                                        pg_total_amount:        scope.pgTotalAmount,
                                     });
                                     break;
                                 case ENUM__VOID_CREDITCARD:
-                                    scope.$apply(function() {
-                                        scope.isProcessing = true;
-                                        $window.forteDeviceHandler.createTransaction({
-                                            pg_transaction_type:            CODE__VOID_CREDITCARD,
-                                            pg_merchant_id:                 scope.pgMerchantId, 
-                                            pg_original_authorization_code: scope.pgOriginalAuthorizationCode,
-                                            pg_original_trace_number:       scope.pgOriginalTraceNumber
-                                        });
+                                    $window.forteDeviceHandler.createTransaction({
+                                        pg_transaction_type:            CODE__VOID_CREDITCARD,
+                                        pg_merchant_id:                 scope.pgMerchantId,
+                                        pg_original_authorization_code: scope.pgOriginalAuthorizationCode,
+                                        pg_original_trace_number:       scope.pgOriginalTraceNumber
                                     });
                                     break;
                                 case ENUM__VOID_EFT:
-                                    scope.$apply(function() {
-                                        scope.isProcessing = true;
-                                        $window.forteDeviceHandler.createTransaction({
-                                            pg_transaction_type:            CODE__VOID_EFT,
-                                            pg_merchant_id:                 scope.pgMerchantId, 
-                                            pg_original_authorization_code: scope.pgOriginalAuthorizationCode,
-                                            pg_original_trace_number:       scope.pgOriginalTraceNumber
-                                        });
+                                    $window.forteDeviceHandler.createTransaction({
+                                        pg_transaction_type:            CODE__VOID_EFT,
+                                        pg_merchant_id:                 scope.pgMerchantId,
+                                        pg_original_authorization_code: scope.pgOriginalAuthorizationCode,
+                                        pg_original_trace_number:       scope.pgOriginalTraceNumber
                                     });
                                     break;
                             }
-                        });
+                        };
 
                         scope.isConnected = false;
                         scope.isProcessing = false;
@@ -180,3 +168,4 @@
         ] 
     ); //angular          
 })();
+
