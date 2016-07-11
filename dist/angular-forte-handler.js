@@ -63,6 +63,7 @@
                                         break;
                                 }
                             }
+                            $log.log(angular.toJson(result));
                             return result;
                         };
 

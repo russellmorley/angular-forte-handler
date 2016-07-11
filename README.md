@@ -38,8 +38,8 @@
 *   **pg-merchant-id** (required, string of six digits) must be set to the six digit merchant id
 *   **pg-total-amount** (required, string of decimal number to two places) for transactionType of 'SALE' and 'CREDIT', represents the amount to charge or credit. Bound variable is coerced into a string of a decimal number to two places.
 *   **pg-sales-tax-amount** (optional, string of decimal to two places) for transactionType 'SALE'. Not used if bound variable is blank, otherwise a positive decimal number to two places is extracted from bound string.
-*   **pg_original-authorization-code** (required for transactionType of 'CREDITCARD_VOID' or 'EFT_VOID').
-*   **pg_original-trace-number** (required for transactionType of 'CREDITCARD_VOID' or 'EFT_VOID').
+*   **pg_original-authorization-code** (required and used only for transactionType of 'CREDITCARD_VOID' or 'EFT_VOID').
+*   **pg_original-trace-number** (required and used only for transactionType of 'CREDITCARD_VOID' or 'EFT_VOID').
 *   **result** the result of
 *   **control** (optional, an object) directive adds method 'triggerTransaction(transactionType)' to object where valid transactionTypes are:
     *   'SALE';
