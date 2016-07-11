@@ -121,13 +121,20 @@
                             if (!scope.isConnected || scope.isProcessing) {
                                 return;
                             }
+                            if (scope.pgTotalAmount) {
+                                // make string be a decimal number to two decimal places
+                                scope.pgTotalAmount = parseFloat(scope.pgTotalAmount.replace(/[^\d-.]/g,'')).toFixed(2).toString();
+                                //remove negative sign from number for internal use 
+                                // (forte handler requires string to be a positive decimal number to two places).
+                                scope.internalPgTotalAmount = scope.pgTotalAmount.replace(/[^\d.]/g,''); 
+                            }
 
                             switch (transactionType) {
                                 case ENUM__SALE:
                                     var transaction = {
                                         //pg_transaction_type:    CODE__SALE,
                                         pg_merchant_id:         scope.pgMerchantId,
-                                        pg_total_amount:        scope.pgTotalAmount,
+                                        pg_total_amount:        scope.internalPgTotalAmount,
                                     };
                                     if (scope.pgSalesTaxAmount) {
                                         transaction.pg_sales_tax_amount = scope.pgSalesTaxAmount;
@@ -138,7 +145,7 @@
                                     $window.forteDeviceHandler.createTransaction({
                                         pg_transaction_type:    CODE__CREDIT,
                                         pg_merchant_id:         scope.pgMerchantId,
-                                        pg_total_amount:        scope.pgTotalAmount,
+                                        pg_total_amount:        scope.internalPgTotalAmount
                                     });
                                     break;
                                 case ENUM__VOID_CREDITCARD:
