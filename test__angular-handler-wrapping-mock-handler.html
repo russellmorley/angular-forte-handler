@@ -12,6 +12,7 @@
                 'use strict';
                 angular.module('app', ['angularForteHandler'])
                     .controller('Controller', ['$scope', '$timeout', function($scope, $timeout) {
+                        $scope.control = {};
                     }]);
             })(window.angular);
 
@@ -23,10 +24,6 @@
 
                 $('#disconnect').on('click', function () {
                     forteDeviceHandler.triggerConnected(false);
-                });
-
-                $('#acknowledge').on('click', function () {
-                    forteDeviceHandler.setBehavior('acknowledge');
                 });
 
                 $('#succeed').on('click', function () {
@@ -58,7 +55,6 @@
             <input type="button" id="disconnect" value="disconnect"> <br>
             <br>
                     <!-- sets how the mock will respond when handing requests -->
-            <input type="button" id="acknowledge" value="acknowledge"> <br>
             <input type="button" id="succeed" value="succeed"> <br>
             <input type="button" id="decline" value="decline"> <br>
             <input type="button" id="error" value="error"><br>
@@ -85,6 +81,8 @@
                 pg-merchant-id="merchantId"
                 pg-total-amount="amount"
                 pg-sales-tax-amount="tax"
+                pg_original-authorization-code="result.pg_authorization_code"
+                pg_original-trace-number="result.pg_trace_number"
                 result="result"
                 control="control" />
             <br><br>

@@ -140,7 +140,7 @@
                                         pg_total_amount:        scope.internalPgTotalAmount,
                                     };
                                     if (scope.pgSalesTaxAmount) {
-                                        transaction.pg_sales_tax_amount = scope.pgSalesTaxAmount.replace(/[^\d.]/g,'');
+                                        transaction.pg_sales_tax_amount = parseFloat(scope.pgSalesTaxAmount.replace(/[^\d.]/g,'')).toFixed(2).toString();
                                     }
                                     $window.forteDeviceHandler.createTransaction(transaction);
                                     break;
