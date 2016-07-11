@@ -47,6 +47,10 @@
     *   'VOID_CREDITCARD'
     *   'VOID_EFT'
 
+## Notes
+
+handler.js obtained from https://s3.amazonaws.com/public.forte.prod/fpdh/handler.js
+
 ## Author
 
 Russell Morley. MIT licensed.
