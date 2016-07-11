@@ -1,12 +1,12 @@
 /**
  * @name Forte Handler Mock 
- * @version 0.01
+ * @version 0.3.x
  * @author Russell Morley
  * @fileoverview
  * This object mocks forte's vx 520 JS handler
  * @dependencies
  * @copyright
- * Copyright 2015 Compass Point, Inc.
+ * Copyright 2016 Compass Point, Inc.
  */
 
 /**

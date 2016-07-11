@@ -1,6 +1,8 @@
 /**!
  * AngularJS VX520 button attribute directive.
  * @author Russell Morley <russell@compass-point.net>
+ * @copyright
+ * Copyright 2016 Compass Point, Inc.
  * @version 0.3.x
  */
 
@@ -137,7 +139,7 @@
                                         pg_total_amount:        scope.internalPgTotalAmount,
                                     };
                                     if (scope.pgSalesTaxAmount) {
-                                        transaction.pg_sales_tax_amount = scope.pgSalesTaxAmount;
+                                        transaction.pg_sales_tax_amount = scope.pgSalesTaxAmount.replace(/[^\d.]/g,'');
                                     }
                                     $window.forteDeviceHandler.createTransaction(transaction);
                                     break;

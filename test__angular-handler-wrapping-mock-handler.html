@@ -1,7 +1,7 @@
 ﻿<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
     <head>
-        <title>Angular Handler Directive wrapping mock handler</title>
+        <title>Angular Handler Directive wrapping mock handler, V0.3.x</title>
         <script src="mock_handler.js" type="text/javascript"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.18/angular.min.js"></script>
         <script src="https://code.jquery.com/jquery-1.11.0.min.js"></script>
@@ -67,19 +67,44 @@
             <!-- MOCK control command buttons end -->
         </div>
         <div ng-controller="Controller">
-
             Merchant ID: <input ng-model='merchantId' /><br />
             Amount: $<input ng-model="amount" type="text" /><br />
             tax: $<input ng-model='tax' type="text" /><br />
-            <div>Result: {{result.message}}<br>
-            <button angular-forte-handler 
-                is-connected='isConnected' 
-                is-processing='isProcessing' 
-                pg-merchant-id='merchantId' 
-                pg-total-amount='amount' 
-                pg-sales-tax-amount='tax' 
-                pg_transaction_type="'CREDITCARD_SALE'" 
-                result='result' ng-disabled="!isConnected || isProcessing">Submit</button>
+            Result:
+            <ul>
+                <li>amount={{result.pg_total_amount}}</li>
+                <li>response type ={{result.pg_response_type}}</li>
+                <li>response code={{result.pg_response_code}}</li>
+                <li>response description='{{result.pg_response_description}}'</li>
+                <li>authorization code='{{result.pg_authorization_code}}'</li>
+                <li>trace number='{{result.pg_trace_number}}'</li>
+            </ul>
+            <angular-forte-handler 
+                is-connected="isConnected"
+                is-processing="isProcessing"
+                pg-merchant-id="merchantId"
+                pg-total-amount="amount"
+                pg-sales-tax-amount="tax"
+                result="result"
+                control="control" />
+            <br><br>
+            <button ng-click="control.triggerTransaction('SALE');"
+                ng-disabled="!isConnected || isProcessing ||!amount || amount < 0.0">Charge/EBT
+            </button>
+            <br>
+            <button ng-click="control.triggerTransaction('CREDIT');"
+                ng-disabled="!isConnected || isProcessing || !amount || amount > 0.0">Refund
+            </button>
+            <br>
+            <button ng-click="control.triggerTransaction('VOID_CREDITCARD');"
+                ng-disabled="!isConnected || isProcessing || !result.pg_trace_number || !result.pg_authorization_code">Void Charge
+            </button>
+            <br>
+            <button ng-click="control.triggerTransaction('VOID_EBT');"
+                ng-disabled="!isConnected || isProcessing || !result.pg_trace_number || !result.pg_authorization_code">Void EBT
+            </button>
+            <br><br>
+		<button ng-disabled="isProcessing">OK</button>
         </div>
     </body>
 </html>
