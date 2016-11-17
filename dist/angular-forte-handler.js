@@ -111,14 +111,55 @@
                             });
                         }
 
-                       $window.forteDeviceHandler.connect(onConnect)
-                            .disconnect(onDisconnect)
-                            .acknowledge(onAcknowledge)
-                            .success(onSuccess)
-                            .decline(onDecline)
-                            .error(onError)
-                            .timeout(onTimeout)
-                            .init();
+                        /*
+                          forteDeviceHandler.socket is null the first time, set thereafter. This information
+                          is used to either call .init() or not when the directive is loaded. 
+
+                          If init() was instead called each time the directive was loaded,
+                          handler.js appears to create a new underlying socket (and not destroy the old one),
+                          and each of these sockets appears to retain references to the callbacks 
+                          causing them to be called a multiple times over again each time the directive is loaded.
+                          This unfortunate behavior has been confirmed in the debugger.
+                        */
+                        if (!$window.forteDeviceHandler.socket) { 
+                            $window.forteDeviceHandler.connect(onConnect)
+                                .disconnect(onDisconnect)
+                                .acknowledge(onAcknowledge)
+                                .success(onSuccess)
+                                .decline(onDecline)
+                                .error(onError)
+                                .timeout(onTimeout)
+                                .init();
+                        } else {
+                            /*
+                              handler.js .connect, .disconnect, etc., appear to replace, not add to, the
+                              callbacks fired and so calling them again will not register duplicates.
+ 
+                              forteDeviceHander.socket.removeAllListeners() does not appear to work 
+                              (deminified code seems to indicate it clears its own callbacks but not the
+                              underlying socket's!) so a call to this method could not be made in $destroy
+                              so no handlers are left registered when the directive's view is unloaded. 
+                              Old event handlers are therefore still set after this 
+                              directive's view is unloaded, but are replaced when the directive is re-loaded.
+                            */
+                            $window.forteDeviceHandler.connect(onConnect)
+                                .disconnect(onDisconnect)
+                                .acknowledge(onAcknowledge)
+                                .success(onSuccess)
+                                .decline(onDecline)
+                                .error(onError)
+                                .timeout(onTimeout);
+                            /*
+                              Connect or disconnect are only called on when forteDeviceHandler.init() is called
+                              so we must call manually if we wish for them to be fired when the directive 
+                              is loaded.
+                            */
+                            if ($window.forteDeviceHandler.isDisconnect) {
+                                $timeout(function(){onDisconnect({event: 'disconnect'});},0);  
+                            } else {
+                                $timeout(function(){onConnect({event: 'connect'});},0);  
+                            }
+                        }
 
                         scope.directiveControl.triggerTransaction = function(transactionType) {
                             if (!scope.isConnected || scope.isProcessing) {
