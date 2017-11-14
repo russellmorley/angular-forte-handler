@@ -1,0 +1,19 @@
+{
+  "name": "angular-forte-handler",
+  "version": "0.3.3",
+  "description": "An AngularJS directive for interacting with Forte's Vx520 credit card swipe reader handler. Edit",
+  "main": "handler.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ljcp/angular-forte-handler.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ljcp/angular-forte-handler/issues"
+  },
+  "homepage": "https://github.com/ljcp/angular-forte-handler#readme"
+}
